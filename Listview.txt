@@ -1,0 +1,227 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
+namespace BUOI5.BTLOP
+{
+    public partial class Form1_L : Form
+    {
+        public Form1_L()
+        {
+            InitializeComponent();
+        }
+
+        private void textBoxTen_TextChanged(object sender, EventArgs e)
+        {
+            Control ctr = (Control)sender;
+            if (ctr.Text.Length > 0 && !char.IsLetter(ctr.Text[ctr.Text.Length - 1]))
+                error.SetError(ctr, "Bạn phải nhập tên ");
+            else
+                error.Clear();
+        }
+
+        private void Form1_L_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            DialogResult r = MessageBox.Show("Bạn muốn đóng form", "thông báo", MessageBoxButtons.OKCancel);
+            if (r == DialogResult.Cancel)
+                e.Cancel = true;
+        }
+
+        private void textBoxMa_TextChanged(object sender, EventArgs e)
+        {
+            Control ctr = (Control)sender;
+            if (ctr.Text.Length > 0 && !char.IsDigit(ctr.Text[ctr.Text.Length - 1]))
+                error.SetError(ctr, "Bạn phải nhập mã ");
+            else
+                error.Clear();
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+
+        }
+
+        private void Form1_L_Load(object sender, EventArgs e)
+        {
+            string[] dt = { "Kinh", "Hoa", "Ê đê", "H'Mông" };
+            comboBox1.Items.AddRange(dt);
+            comboBox1.SelectedIndex = 0;
+        }
+
+
+        bool Trung(string s)
+        {
+            for (int i = 0; i < listView.Items.Count; i++)
+            {
+                string masv = listView.Items[i].SubItems[1].Text;
+                {
+                    if (string.Compare(s, masv, true) == 0)
+                        return false;// trùng nhau //
+                }
+            }
+            return true;
+
+
+
+           
+
+        }
+
+        private void buttonThem_Click(object sender, EventArgs e)
+        {
+            string ht = textBoxTen.Text;
+            string ma = textBoxMa.Text;
+            string gt;
+            if (radioButtonNam.Checked == true)
+                gt = radioButtonNam.Text;
+            else
+                gt = radioButtonNu.Text;
+
+            string ngoaingu = " ";
+            if (checkBoxAnh.Checked == true)
+                ngoaingu += checkBoxAnh.Text + " ";
+            if (checkBoxPhap.Checked == true)
+                ngoaingu += checkBoxPhap.Text + " ";
+            if (checkBoxHoa.Checked == true)
+                ngoaingu += checkBoxHoa.Text + " ";
+
+
+            string dantoc = comboBox1.Text;
+
+            if (Trung(ma))
+            {
+                ListViewItem items = new ListViewItem(new[] { ht, ma, gt, ngoaingu, dantoc });
+                listView.Items.Add(items);
+                textBoxTen.Clear();
+                textBoxMa.Clear();
+                textBoxTen.Focus();
+                radioButtonNam.Checked = false;
+                radioButtonNu.Checked = false;
+                checkBoxAnh.Checked = false;
+                checkBoxHoa.Checked = false;
+                checkBoxPhap.Checked = false;
+            }
+            else
+            {
+                MessageBox.Show("Không được thêm nhân viên có mã trùng rồi");
+
+            }
+        }
+
+        private void buttonXoa_Click(object sender, EventArgs e)
+        {
+            if (listView.SelectedItems.Count > 0)
+            {
+                if (MessageBox.Show("Bạn có muốn xoá không", "Thông Báo", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+                {
+                    foreach (ListViewItem item in listView.SelectedItems)
+                    {
+                        listView.Items.Remove(item);
+                    }
+                }
+            }
+
+            else
+            {
+                MessageBox.Show("Vui lòng chọn trước khi xoá");
+            }
+        }
+
+        private void buttonSua_Click(object sender, EventArgs e)
+        {
+            int i = listView.FocusedItem.Index;
+            listView.Items[i].SubItems[0].Text = textBoxTen.Text;
+
+            if (radioButtonNam.Checked == true)
+                listView.Items[i].SubItems[2].Text = radioButtonNam.Text;
+            else
+                listView.Items[i].SubItems[2].Text = radioButtonNu.Text;
+
+
+            if (Trung(textBoxMa.Text))
+            {
+                listView.Items[i].SubItems[1].Text = textBoxTen.Text;
+            }
+            else
+            {
+                MessageBox.Show("Đã có mã sinh viên này rồi");
+            }
+
+
+            string ngoaingu = "";
+            if (checkBoxAnh.Checked == true)
+                ngoaingu = checkBoxAnh.Text + " ";
+            if (checkBoxPhap.Checked == true)
+                ngoaingu = checkBoxPhap.Text + " ";
+            if (checkBoxHoa.Checked == true)
+                ngoaingu = checkBoxHoa.Text + " ";
+
+            listView.Items[i].SubItems[3].Text = ngoaingu;
+            listView.Items[i].SubItems[4].Text = comboBox1.Text;
+
+
+        }
+        /*
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+            if (listview.SelectedItems.Count > 0)
+            {
+                DialogResult r = MessageBox.Show("Bạn muốn xóa", "Cảnh Báo!", MessageBoxButtons.OKCancel, MessageBoxIcon.WarningQuestion);
+                if (r == DialogResult.OK)
+                {
+                    for (int i = listview.SelectedItems.Count; i >= 0; i--)
+                        listview.Items.Remove(listview.SelectedItems[i]);
+                    MessageBox.Show("Xóa thành công!", "Thông Báo");
+                }
+            }
+        }
+        */
+        private void listView_Click(object sender, EventArgs e)
+        {
+            int i = listView.FocusedItem.Index;
+            textBoxMa.Text = listView.Items[i].SubItems[1].Text;
+            textBoxTen.Text = listView.Items[i].SubItems[0].Text;
+
+            if (listView.Items[i].SubItems[2].Text == "Nam")
+                radioButtonNam.Checked = true;
+            else
+                radioButtonNu.Checked = false;
+
+
+            string s = listView.Items[i].SubItems[3].Text.Trim(); // Lấy chuỗi từ listView
+            string[] a = s.Split(' '); // Tách theo dấu phẩy
+
+            for (int j = 0; j < a.Length; j++)
+            {
+                if (a[j] == "Anh")
+                {
+                    checkBoxAnh.Checked = true;
+                }
+                if (a[j] == "Pháp")
+                {
+                    checkBoxPhap.Checked = true;
+                }
+                if (a[j] == "Hoa")
+                {
+                    checkBoxHoa.Checked = true;
+                }
+
+            }
+            comboBox1.Text = listView.Items[i].SubItems[4].Text;
+        }
+
+        private void listView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+    }
+}

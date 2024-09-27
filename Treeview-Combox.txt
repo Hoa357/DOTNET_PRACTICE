@@ -1,0 +1,106 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
+namespace TruongMyHoa_Buoi4.BTMAU
+{
+    public partial class ForHSNV1 : Form
+    {
+        public ForHSNV1()
+        {
+            InitializeComponent();
+        }
+
+        // THÊM NODE VÀO TREEVIEW
+        private void ForHSNV1_Load(object sender, EventArgs e)
+        {
+            string[] s = { "Giám đốc", "Tổ chứuc hành chính", "Kế hoạch", "Kế toán" };
+
+            foreach(string i in s)
+            {
+                trv_DS.Nodes.Add(i);
+                comboBox_PB.Items.Add(i);
+                
+            }    
+
+        }
+
+        private void trv_DS_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
+        }
+        // VIẾT HÀM KIỂM TRA TRÙNNG BÊN NGHOÀI 
+
+        bool KTTRUNG(string S, TreeView T)
+        {
+            foreach(TreeNode node in T.Nodes)
+            {
+                if (string.Compare(S,node.Text, true) == 0)
+                {
+                    return false;
+                }
+               
+            }
+            return true;
+           
+        }
+        private void btt_ThemPBNew_Click(object sender, EventArgs e)
+        {
+           
+            if(txtPb.Text.Length > 0 && KTTRUNG(txtPb.Text,trv_DS))
+            {
+               trv_DS.Nodes.Add(txtPb.Text);
+               comboBox_PB.Items.Add(txtPb.Text);
+            }    
+            else if(txtPb.Text.Length == 0 )
+            {
+                MessageBox.Show("Vui lòng nhập phòng ban");
+            }
+            else
+            {
+                MessageBox.Show("Đã có phòng ban này rồi");
+                txtPb.Text = " ";
+                txtPb.Focus();
+            }    
+        }
+
+        private void bttXoaPB_Click(object sender, EventArgs e)
+        {
+            if(MessageBox.Show("Bạn có muốn xoá không ? ","Thông báo",MessageBoxButtons.OKCancel) == DialogResult.OK)
+            {
+                if (trv_DS.SelectedNode != null)
+                {
+                    trv_DS.Nodes.Remove(trv_DS.SelectedNode);
+                    comboBox_PB.Items.Remove(trv_DS.SelectedNode);
+                }
+                else
+                {
+                    MessageBox.Show("Vui lòng chọn phòng ban muốn xoá");
+                }
+            } 
+           
+        }
+
+        private void bttThemNV_Click(object sender, EventArgs e)
+        {
+            int index = -1;
+            foreach (TreeNode node in trv_DS.Nodes)
+            {
+               
+                if (node.Text == comboBox_PB.Text)
+                {
+                    index = node.Index;
+                }    
+            }
+            trv_DS.Nodes.Add(txtTen.Text + " " + txtMa.Text);
+            trv_DS.ExpandAll();
+        }
+    }
+}
